@@ -9,9 +9,8 @@ Build steps:
 npm install typescript -g
 npm install webpack -g
 npm install webpack-cli -g
-npm install
-npm i @types/offscreencanvas
 
+npm install
 tsc
 webpack
 ```
