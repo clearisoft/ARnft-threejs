@@ -53,7 +53,7 @@ export default class NFTaddTJS {
         this.entities.push({name, mesh})
     }
 
-    public addModel (url: string, name: string, x: number, y: number, z: number, scale: number,  objVisibility: boolean) {
+    public addModel (url: string, name: string, scale: number,  objVisibility: boolean, callback: (model: any) => void) {
         const root = new Object3D();
         root.name = 'root-' + name;
         root.matrixAutoUpdate = false;
@@ -64,11 +64,13 @@ export default class NFTaddTJS {
         threeGLTFLoader.load(url, gltf => {
             model = gltf.scene
             model.scale.set(scale, scale, scale)
-            model.rotation.x = Math.PI / 2
-            model.position.x = x
-            model.position.y = y
-            model.position.z = z
             root.add(model)
+        })
+        document.addEventListener('getNFTData-' + this.uuid + '-' + name, (ev: any) => {
+            var msg = ev.detail
+            model.position.y = (msg.height / msg.dpi * 2.54 * 10) / 2.0
+            model.position.x = (msg.width / msg.dpi * 2.54 * 10) / 2.0
+            callback(model)
         })
         document.addEventListener('getMatrixGL_RH-' + this.uuid + '-' + name, (ev: any) => {
             root.visible = true
@@ -82,7 +84,7 @@ export default class NFTaddTJS {
           })
           this.names.push(name);
     }
-    public addImage (imageUrl: string, name: string, color: string, scale: number,  objVisibility: boolean) {
+    public addImage (imageUrl: string, name: string, color: string, scale: number,  objVisibility: boolean, callback: (plane: any) => void) {
       const root = new Object3D();
       root.name = 'root-' + name;
       root.matrixAutoUpdate = false;
@@ -96,6 +98,7 @@ export default class NFTaddTJS {
             var msg = ev.detail
             plane.position.y = (msg.height / msg.dpi * 2.54 * 10) / 2.0
             plane.position.x = (msg.width / msg.dpi * 2.54 * 10) / 2.0
+            callback(plane)
       })
       root.add(plane)
       document.addEventListener('getMatrixGL_RH-' + this.uuid + '-' + name, (ev: any) => {
@@ -110,7 +113,7 @@ export default class NFTaddTJS {
       })
       this.names.push(name);
     }
-    public addVideo (id: string, name: string, scale: number,  objVisibility: boolean) {
+    public addVideo (id: string, name: string, scale: number,  objVisibility: boolean, callback: (plane: any) => void) {
       const root = new Object3D();
       root.name = 'root-' + name;
       root.matrixAutoUpdate = false;
@@ -126,6 +129,7 @@ export default class NFTaddTJS {
            var msg = ev.detail
            plane.position.y = (msg.height / msg.dpi * 2.54 * 10) / 2.0
            plane.position.x = (msg.width / msg.dpi * 2.54 * 10) / 2.0
+           callback(plane)
       })
       root.add(plane)
       document.addEventListener('getMatrixGL_RH-' + this.uuid + '-' + name, (ev: any) => {
