@@ -4,6 +4,18 @@ It is based on [Three.js](https://github.com/mrdoob/three.js) !!
 
 ## Use the library
 
+Build steps:
+```
+npm install typescript -g
+npm install webpack -g
+npm install webpack-cli -g
+npm install
+npm i @types/offscreencanvas
+
+tsc
+webpack
+```
+
 You can clone with git:
 
 `git clone https://github.com/webarkit/ARnft-threejs`
