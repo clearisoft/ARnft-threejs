@@ -79,12 +79,11 @@
                     let action1 = null;
                     var clock1 = new THREE.Clock();
                     let nftAddTJS = new ARnftThreejs.NFTaddTJS(nft.uuid);
-                    nftAddTJS.addModel('./Data/models/Bee.glb', 'pinball', 40, false, function(model, anim) {
+                    nftAddTJS.addModel('./Data/models/Bee.glb', 'pinball', 5, false, function(model, anim) {
                         model.position.x += 0;
                         model.rotation.x = 0;
                         model.rotation.x = -3.1415926/2;
                         model.rotation.z = -3.1415926;
-                        model.scale.set(5, 5, 5);
 
                         mixer1 = new THREE.AnimationMixer( model );
                         mixer1.timeScale=1;
@@ -102,32 +101,27 @@
                         }
                     })
 
-                    nftAddTJS.addModel('./Data/models/brave_robot/gLTF/brave_robot.glb', '柜子', 40, false, function(model, anim) {
+                    nftAddTJS.addModel('./Data/models/brave_robot/gLTF/brave_robot.glb', '柜子', 100, false, function(model, anim) {
                         model.position.x += 0;
                         model.rotation.x = 0;
-                        model.scale.set(50, 50, 50);
                     });
-                    nftAddTJS.addModel('./Data/models/House.glb', '滑雪', 40, false, function(model, anim) {
+                    nftAddTJS.addModel('./Data/models/House.glb', '滑雪', 100, false, function(model, anim) {
                         model.position.x += 0;
                         model.rotation.x = 0;
-                        model.scale.set(50, 50, 50);
                     });
-                    nftAddTJS.addModel('./Data/models/Soldier.glb', '吉祥', 40, false, function(model, anim) {
+                    nftAddTJS.addModel('./Data/models/Soldier.glb', '吉祥', 100, false, function(model, anim) {
                         model.position.x += 0;
                         model.rotation.x = 0;
-                        model.scale.set(50, 50, 50);
                     });
-                    nftAddTJS.addImage('./Data/aframe-k.png', '泡茶', 0xbbbbff, 40, false);
+                    nftAddTJS.addImage('./Data/aframe-k.png', '泡茶', 0xbbbbff, 180, false);
                     nftAddTJS.addVideo('arvideo', '水塘', 180, false);
-                    nftAddTJS.addModel('./Data/models/Bee.glb', '西瓜', 40, false, function(model, anim) {
+                    nftAddTJS.addModel('./Data/models/Bee.glb', '西瓜', 5, false, function(model, anim) {
                         model.position.x += 0;
                         model.rotation.x = 0;
-                        model.scale.set(10, 10, 10);
                     });
-                    nftAddTJS.addModel('./Data/models/Duck/glTF/Duck.glb', '小马', 40, false, function(model, anim) {
+                    nftAddTJS.addModel('./Data/models/Duck/glTF/Duck.glb', '小马', 100, false, function(model, anim) {
                         model.position.x += 0;
                         model.rotation.x = 0;
-                        model.scale.set(10, 10, 10);
                     });
 
                     const tick = () => {
