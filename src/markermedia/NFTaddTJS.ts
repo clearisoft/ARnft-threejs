@@ -53,24 +53,28 @@ export default class NFTaddTJS {
         this.entities.push({name, mesh})
     }
 
-    public addModel (url: string, name: string, scale: number,  objVisibility: boolean, callback: (model: any) => void) {
+    public addModel (url: string, name: string, scale: number,  objVisibility: boolean, callback: (model: any, anim: any) => void) {
         const root = new Object3D();
         root.name = 'root-' + name;
         root.matrixAutoUpdate = false;
         this.scene.add(root);
         let model: any
+        let anim: any
         /* Load Model */
         const threeGLTFLoader = new GLTFLoader()
         threeGLTFLoader.load(url, gltf => {
             model = gltf.scene
             model.scale.set(scale, scale, scale)
+            anim = gltf.animations[0]
             root.add(model)
         })
         document.addEventListener('getNFTData-' + this.uuid + '-' + name, (ev: any) => {
             var msg = ev.detail
             model.position.y = (msg.height / msg.dpi * 2.54 * 10) / 2.0
             model.position.x = (msg.width / msg.dpi * 2.54 * 10) / 2.0
-            callback(model)
+            if (callback) {
+              callback(model, anim)
+            }
         })
         document.addEventListener('getMatrixGL_RH-' + this.uuid + '-' + name, (ev: any) => {
             root.visible = true
@@ -80,7 +84,9 @@ export default class NFTaddTJS {
           })
           document.addEventListener('nftTrackingLost-' + this.uuid + '-' + name, (ev: any) => {
             root.visible = objVisibility
-            model.visible = objVisibility
+            if (model) {
+              model.visible = objVisibility
+            }
           })
           this.names.push(name);
     }
@@ -98,7 +104,9 @@ export default class NFTaddTJS {
             var msg = ev.detail
             plane.position.y = (msg.height / msg.dpi * 2.54 * 10) / 2.0
             plane.position.x = (msg.width / msg.dpi * 2.54 * 10) / 2.0
-            callback(plane)
+            if (callback) {
+              callback(plane)
+            }
       })
       root.add(plane)
       document.addEventListener('getMatrixGL_RH-' + this.uuid + '-' + name, (ev: any) => {
@@ -129,7 +137,9 @@ export default class NFTaddTJS {
            var msg = ev.detail
            plane.position.y = (msg.height / msg.dpi * 2.54 * 10) / 2.0
            plane.position.x = (msg.width / msg.dpi * 2.54 * 10) / 2.0
-           callback(plane)
+           if (callback) {
+            callback(plane)
+           }
       })
       root.add(plane)
       document.addEventListener('getMatrixGL_RH-' + this.uuid + '-' + name, (ev: any) => {
