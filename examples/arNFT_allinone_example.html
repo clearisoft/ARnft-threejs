@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ARnft example with a gltf model</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.5, maximum-scale=1">
+    <link rel="stylesheet" href="css/nft-style.css">
+</head>
+
+<body>
+
+    <a href="https://raw.githubusercontent.com/artoolkitx/artoolkit5/master/doc/Marker%20images/pinball.jpg"
+        class="ui marker" target="_blank">
+        🖼 Marker Image
+    </a>
+    <video loop autoplay muted webkit-playsinline playsinline crossOrigin="anonymous" id="arvideo">
+        <source src="https://avo-content-dev.s3.amazonaws.com/videos/bg_1588085276090.mp4" type='video/mp4'>
+    </video>
+
+    <script src="js/third_party/three.js/three.min.js"></script>
+    <script src="js/ARnftThreejs.js"></script>
+    <script src="../dist/ARnft.js"></script>
+
+    <script>
+         const entities = [
+            { name: 'pinball', markerUrl: "examples/DataNFT/pinball" },
+            { name: '柜子', markerUrl: "examples/DataNFT/柜子"},
+            { name: '滑雪', markerUrl: "examples/DataNFT/滑雪"},
+            { name: '吉祥', markerUrl: "examples/DataNFT/吉祥"},
+            { name: '拍照', markerUrl: "examples/DataNFT/拍照"},
+            { name: '泡茶', markerUrl: "examples/DataNFT/泡茶"},
+            { name: '汽车', markerUrl: "examples/DataNFT/汽车"},
+            { name: '水塘', markerUrl: "examples/DataNFT/水塘"},
+            { name: '西瓜', markerUrl: "examples/DataNFT/西瓜"},
+            { name: '小马', markerUrl: "examples/DataNFT/小马"},
+
+    ]
+        ARnft.ARnft.initWithEntities(640, 480, entities,  'config.json', false)
+            .then((nft) => {
+                document.addEventListener('containerEvent', function (ev) {
+
+                    let canvas = document.getElementById('canvas');
+                    let fov = 0.8 * 180 / Math.PI;
+                    let ratio = window.clientWidth / window.clientHeight;
+                    let config = {
+                        "renderer": {
+                            "alpha": true,
+                            "antialias": true,
+                            "context": null,
+                            "precision": "mediump",
+                            "premultipliedAlpha": true,
+                            "stencil": true,
+                            "depth": true,
+                            "logarithmicDepthBuffer": true
+                        },
+                        "camera": {
+                            "fov": fov,
+                            "ratio": ratio,
+                            "near": 0.01,
+                            "far": 1000
+                        }
+                    }
+
+                    let sceneThreejs = new ARnftThreejs.SceneRendererTJS(config, canvas, nft.uuid,
+                        true);
+                    sceneThreejs.initRenderer();
+
+                    const renderer = sceneThreejs.getRenderer();
+                    const scene = sceneThreejs.getScene();
+                    renderer.outputEncoding = THREE.sRGBEncoding;
+                    renderer.physicallyCorrectLights = true;
+                    let directionalLight = new THREE.DirectionalLight('#fff', 0.4);
+                    directionalLight.position.set(0.5, 0, 0.866);
+                    scene.add(directionalLight)
+
+                    
+                    let mixer1 = null;
+                    let action1 = null;
+                    var clock1 = new THREE.Clock();
+                    let nftAddTJS = new ARnftThreejs.NFTaddTJS(nft.uuid);
+                    nftAddTJS.addModel('./Data/models/Bee.glb', 'pinball', 40, false, function(model, anim) {
+                        model.position.x += 0;
+                        model.rotation.x = 0;
+                        model.rotation.x = -3.1415926/2;
+                        model.rotation.z = -3.1415926;
+                        model.scale.set(5, 5, 5);
+
+                        mixer1 = new THREE.AnimationMixer( model );
+                        mixer1.timeScale=1;
+                        action1 = mixer1.clipAction( anim );
+                    });
+
+                    document.addEventListener('getMatrixGL_RH-' + nft.uuid + '-pinball', function() {
+                        if (action1) {
+                            action1.play();
+                        }
+                    })
+                    document.addEventListener('nftTrackingLost-' + nft.uuid + '-pinball', function() {
+                        if (action1) {
+                            action1.stop();
+                        }
+                    })
+
+                    nftAddTJS.addModel('./Data/models/brave_robot/gLTF/brave_robot.glb', '柜子', 40, false, function(model, anim) {
+                        model.position.x += 0;
+                        model.rotation.x = 0;
+                        model.scale.set(50, 50, 50);
+                    });
+                    nftAddTJS.addModel('./Data/models/House.glb', '滑雪', 40, false, function(model, anim) {
+                        model.position.x += 0;
+                        model.rotation.x = 0;
+                        model.scale.set(50, 50, 50);
+                    });
+                    nftAddTJS.addModel('./Data/models/Soldier.glb', '吉祥', 40, false, function(model, anim) {
+                        model.position.x += 0;
+                        model.rotation.x = 0;
+                        model.scale.set(50, 50, 50);
+                    });
+                    nftAddTJS.addImage('./Data/aframe-k.png', '泡茶', 0xbbbbff, 40, false);
+                    nftAddTJS.addVideo('arvideo', '水塘', 180, false);
+                    nftAddTJS.addModel('./Data/models/Bee.glb', '西瓜', 40, false, function(model, anim) {
+                        model.position.x += 0;
+                        model.rotation.x = 0;
+                        model.scale.set(10, 10, 10);
+                    });
+                    nftAddTJS.addModel('./Data/models/Duck/glTF/Duck.glb', '小马', 40, false, function(model, anim) {
+                        model.position.x += 0;
+                        model.rotation.x = 0;
+                        model.scale.set(10, 10, 10);
+                    });
+
+                    const tick = () => {
+                        sceneThreejs.draw();
+                        window.requestAnimationFrame(tick)
+                        if (mixer1) {
+                            mixer1.update(clock1.getDelta() * mixer1.timeScale);
+                        }
+                    }
+                    tick()
+                })
+            }).catch((error) => {
+                console.log(error);
+            });
+    </script>
+</body>
+
+</html>
