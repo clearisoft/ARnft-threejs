@@ -144,11 +144,11 @@ export default class ARnft {
         // views
         Container.createContainer(this.appData);
         Container.createLoading(this.appData);
-        Container.createStats(this.appData.stats.createHtml, this.appData);
 
         let statsMain: any, statsWorker: any
 
         if (stats) {
+            Container.createStats(this.appData.stats.createHtml, this.appData);
             statsMain = new Stats()
             statsMain.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
             document.getElementById('stats1').appendChild(statsMain.dom)
@@ -169,25 +169,29 @@ export default class ARnft {
             this.controllers[index].initialize(
                 this.appData.cameraPara, 
                 this.cameraView.getImage(), 
+                stats ? 
                 () => {
                     if (stats) {
                         statsMain.update()
-                }
-                },
+                    }
+                } : null,
+                stats ? 
                 () => {
                     if (stats) {
                         statsWorker.update()
-                }
-            })
-
-            this.controllers[index].process(this.cameraView.getImage())
-            let update = () => {
-            this.controllers[index].process(this.cameraView.getImage());
-            requestAnimationFrame(update);
-            }
-            update()
-            
+                    }
+                } : null
+            )
         })
+
+        const update = () => {
+            const imageData : ImageData = this.cameraView.getImage()
+            markerUrls.forEach((markerUrl: string, index: number) => {   
+                this.controllers[index].process(imageData)
+            })
+            requestAnimationFrame(update);
+        }
+        update()
     })
         return Promise.resolve(this)
     }

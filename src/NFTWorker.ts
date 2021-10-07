@@ -100,7 +100,7 @@ export default class NFTWorker {
         }
         this._processing = true;
 
-        this.worker.postMessage({ type: 'process', imagedata: imageData }, [imageData.data.buffer]);
+        this.worker.postMessage({ type: 'process', imagedata: imageData }, []);
     }
     
     /**
@@ -183,10 +183,15 @@ export default class NFTWorker {
                     }
                     case 'found': {
                         this.found(msg)
+                        this._processing = false;
                         break
                     }
                     case 'not found': {
                         this.found(null)
+                        let that = this;
+                        setTimeout(function() {
+                            that._processing = false;
+                        }, 250)
                         break
                     }
                     case 'error': {
@@ -196,14 +201,18 @@ export default class NFTWorker {
                         break
                       }
                 }
-                this._processing = false;
-                trackUpdate();
+
+                if (trackUpdate) {
+                    trackUpdate();
+                }
             };
             let renderU = () => {
                 renderUpdate()
                 window.requestAnimationFrame(renderU)
             }
-            renderU();
+            if (renderUpdate) {
+                renderU();
+            }
             this.process(imageData);
         });
     };
