@@ -1,6 +1,18 @@
 import http.server, ssl
- 
-server_address = ('192.168.3.13', 443)
+import socket
+
+def get_host_ip():
+    ip = '127.0.0.1'
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    finally:
+        s.close()
+    return ip
+
+server_address = (get_host_ip(), 443)
+print('url is https://' + server_address[0])
 httpd = http.server.HTTPServer(server_address, http.server.SimpleHTTPRequestHandler)
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                server_side=True,
