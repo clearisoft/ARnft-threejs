@@ -9,5 +9,6 @@ export default class NFTaddTJS {
     addModel(url: string, name: string, scale: number, objVisibility: boolean, callback: (model: any, anim: any) => void): void;
     addImage(imageUrl: string, name: string, color: string, scale: number, objVisibility: boolean, callback: (plane: any) => void): void;
     addVideo(id: string, name: string, scale: number, objVisibility: boolean, callback: (plane: any) => void): void;
+    addGif(imageUrl: string, name: string, color: string, scale: number, objVisibility: boolean, callback: (plane: any) => void): void;
     getNames(): string[];
 }

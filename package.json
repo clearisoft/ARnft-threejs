@@ -47,6 +47,7 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@types/offscreencanvas": "^2019.6.4",
-    "three": "^0.128.0"
+    "three": "^0.128.0",
+    "three-gif-loader-with-ctrl": "^1.0.0"
   }
 }

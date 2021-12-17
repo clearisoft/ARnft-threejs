@@ -8,6 +8,7 @@ import { Object3D,
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Utils } from '../utils/Utils'
 import SceneRendererTJS from '../SceneRendererTJS'
+import GifLoader from '../../node_modules/three-gif-loader-with-ctrl/'
 
 interface ARvideo {
   play: () => void;
@@ -53,7 +54,7 @@ export default class NFTaddTJS {
         this.entities.push({name, mesh})
     }
 
-    public addModel (url: string, name: string, scale: number,  objVisibility: boolean, callback: (model: any, anim: any) => void) {
+    public addModel (url: string, name: string, scale: number, objVisibility: boolean, callback: (model: any, anim: any) => void) {
         const root = new Object3D();
         root.name = 'root-' + name;
         root.matrixAutoUpdate = false;
@@ -90,7 +91,7 @@ export default class NFTaddTJS {
           })
           this.names.push(name);
     }
-    public addImage (imageUrl: string, name: string, color: string, scale: number,  objVisibility: boolean, callback: (plane: any) => void) {
+    public addImage (imageUrl: string, name: string, color: string, scale: number, objVisibility: boolean, callback: (plane: any) => void) {
       const root = new Object3D();
       root.name = 'root-' + name;
       root.matrixAutoUpdate = false;
@@ -121,7 +122,7 @@ export default class NFTaddTJS {
       })
       this.names.push(name);
     }
-    public addVideo (id: string, name: string, scale: number,  objVisibility: boolean, callback: (plane: any) => void) {
+    public addVideo (id: string, name: string, scale: number, objVisibility: boolean, callback: (plane: any) => void) {
       const root = new Object3D();
       root.name = 'root-' + name;
       root.matrixAutoUpdate = false;
@@ -154,6 +155,40 @@ export default class NFTaddTJS {
           root.visible = objVisibility
           plane.visible = objVisibility
           ARVideo.pause()
+      })
+      this.names.push(name);
+    }
+
+    public addGif (imageUrl: string, name: string, color: string, scale: number,  objVisibility: boolean, callback: (plane: any) => void) {
+      const root = new Object3D();
+      root.name = 'root-' + name;
+      root.matrixAutoUpdate = false;
+      this.scene.add(root);
+      const planeGeom = new PlaneGeometry(1, 1, 1, 1)
+      const texture = (new GifLoader(null)).load(imageUrl, null, null, null)
+      const material = new MeshStandardMaterial({ color: color, map: texture});
+      const plane = new Mesh(planeGeom, material)
+      plane.scale.set(scale, scale, scale)
+      document.addEventListener('getNFTData-' + this.uuid + '-' + name, (ev: any) => {
+            var msg = ev.detail
+            plane.position.y = (msg.height / msg.dpi * 2.54 * 10) / 2.0
+            plane.position.x = (msg.width / msg.dpi * 2.54 * 10) / 2.0
+            if (callback) {
+              callback(plane)
+            }
+      })
+      root.add(plane)
+      document.addEventListener('getMatrixGL_RH-' + this.uuid + '-' + name, (ev: any) => {
+           root.visible = true
+           plane.visible = true
+           const matrix = Utils.interpolate(ev.detail.matrixGL_RH)
+           Utils.setMatrix(root.matrix, matrix)
+           texture.play()
+      })
+      document.addEventListener('nftTrackingLost-' + this.uuid + '-' + name, (ev: any) => {
+           root.visible = objVisibility
+           plane.visible = objVisibility
+           texture.pause()
       })
       this.names.push(name);
     }
