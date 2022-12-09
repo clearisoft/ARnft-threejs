@@ -4,7 +4,10 @@ import { Object3D,
          TextureLoader,
          VideoTexture,
          Mesh,
-         MeshStandardMaterial } from 'three'
+         LinearFilter,
+         ShaderMaterial,
+         MeshStandardMaterial, 
+         Color} from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Utils } from '../utils/Utils'
 import SceneRendererTJS from '../SceneRendererTJS'
@@ -122,14 +125,47 @@ export default class NFTaddTJS {
       })
       this.names.push(name);
     }
-    public addVideo (id: string, name: string, scale: number, objVisibility: boolean, callback: (plane: any) => void) {
+    public addVideo (id: string, name: string, alpha: boolean, scale: number, objVisibility: boolean, callback: (plane: any) => void) {
       const root = new Object3D();
       root.name = 'root-' + name;
       root.matrixAutoUpdate = false;
       this.scene.add(root);
       const ARVideo: HTMLVideoElement = document.getElementById(id) as HTMLVideoElement;
       const texture = new VideoTexture(ARVideo as HTMLVideoElement)
-      const mat = new MeshStandardMaterial({ color: 0xbbbbff, map: texture })
+      texture.minFilter = LinearFilter;
+      let mat = null;
+      if (!alpha) {
+        mat = new MeshStandardMaterial({ color: 0xbbbbff, map: texture })
+      } else {
+        mat = new ShaderMaterial({
+          uniforms: {
+            vTexture: {
+              value: texture
+            }
+          },
+          vertexShader: 
+            `varying vec2 vUv;
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            }`,
+          fragmentShader: 
+            `#ifdef GL_ES
+            precision highp float;
+            #endif
+
+            uniform sampler2D vTexture;
+            varying vec2 vUv;
+
+            void main( void ) {
+              gl_FragColor = vec4(
+              texture2D(vTexture, vec2(0.5+vUv.x/2., vUv.y)).rgb,
+              texture2D(vTexture, vec2(vUv.x/2., vUv.y)).r
+              );
+            }`,
+          transparent: true,
+        });
+      }
       ARVideo.play()
       ARVideo.pause()
       const planeGeom = new PlaneGeometry(1, 1, 1, 1)
