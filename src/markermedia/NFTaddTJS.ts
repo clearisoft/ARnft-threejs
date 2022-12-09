@@ -143,26 +143,23 @@ export default class NFTaddTJS {
               value: texture
             }
           },
-          vertexShader: 
-            `varying vec2 vUv;
-            void main() {
-              vUv = uv;
-              gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-            }`,
-          fragmentShader: 
-            `#ifdef GL_ES
-            precision highp float;
-            #endif
-
-            uniform sampler2D vTexture;
-            varying vec2 vUv;
-
-            void main( void ) {
-              gl_FragColor = vec4(
-              texture2D(vTexture, vec2(0.5+vUv.x/2., vUv.y)).rgb,
-              texture2D(vTexture, vec2(vUv.x/2., vUv.y)).r
-              );
-            }`,
+          vertexShader:
+            "varying mediump vec2 vUv;\n" +
+            "void main(void)\n" +
+            "{\n" +
+            "  vUv = uv;\n" +
+            "  mediump vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n" +
+            "  gl_Position = projectionMatrix * mvPosition;\n" +
+            "}",
+          fragmentShader:
+            "uniform mediump sampler2D vTexture;\n" +
+            "varying mediump vec2 vUv;\n" +
+            "void main(void)\n" +
+            "{\n" +
+            "  mediump vec3 tColor = texture2D( vTexture, vec2(0.5+vUv.x/2., vUv.y) ).rgb;\n" +
+            "  mediump float a = texture2D(vTexture, vec2(vUv.x/2., vUv.y)).r;\n" +
+            "  gl_FragColor = vec4(tColor, a);\n" +
+            "}",
           transparent: true,
         });
       }
